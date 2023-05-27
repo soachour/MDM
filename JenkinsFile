@@ -7,11 +7,41 @@ pipeline {
         input {
           message "Specify the branch to recover code from BitPocket"
           parameters {
-            string(name: 'Dev1', defaultValue: 'Dev1', description: 'Enter the branch name')
+            string(name: 'BRANCH', defaultValue: 'master', description: 'Enter the branch name')
           }
         }
-        git branch: "${Dev1.BRANCH}", url: 'https://github.com/soachour/MDM.git'
+        git branch: "${params.BRANCH}", url: '<bitpocket-repo-url>'
       }
     }
-  } 
+
+    stage('Run Tests') {
+      steps {
+        sh 'node --version'
+        sh 'node -v'
+        sh 'npm install'
+        
+        dir('path/to/your/test/folder') { // Replace with the actual folder path
+          script {
+            def testResult = sh script: 'node your-test-script.js', returnStatus: true
+            if (testResult == 0) {
+              currentBuild.result = 'SUCCESS'
+            } else {
+              currentBuild.result = 'FAILURE'
+            }
+          }
+        }
+      }
+    }
+
+    stage('Send Code via SFTP') {
+      when {
+        expression {
+          return currentBuild.result == 'SUCCESS'
+        }
+      }
+      steps {
+        // SFTP configuration and steps
+      }
+    }
+  }
 }
