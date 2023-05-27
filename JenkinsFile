@@ -1,11 +1,17 @@
 pipeline {
-    agent any
+  agent any
 
-    stages {
-        stage('Hello') {
-            steps {
-                echo 'Hello World'
-            }
+  stages {
+    stage('Recover Code from BitPocket') {
+      steps {
+        input {
+          message "Specify the branch to recover code from BitPocket"
+          parameters {
+            string(name: 'Dev1', defaultValue: 'Dev1', description: 'Enter the branch name')
+          }
         }
+        git branch: "${Dev1.BRANCH}", url: 'https://github.com/soachour/MDM.git'
+      }
     }
+  } 
 }
